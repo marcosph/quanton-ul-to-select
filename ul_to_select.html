@@ -59,12 +59,10 @@
         </ul>
         <script type="text/javascript">
             $(function(){
-                var ulToSelect = function(element) {
+                var ulToSelect = function(element, edgeWidth) {
                     var adSelect = function() {
                         var $thisUl = element; 
-                        $thisUl.attr({
-                            "class": "ul-select"
-                        });
+                        $thisUl.addClass("ul-select");
                         var $activeLi = $thisUl.find("li.active");
                         if($activeLi.length > 0) {
                             var $li = $(document.createElement('li')).attr({
@@ -91,8 +89,10 @@
                     };
                     var close = function() {
                         var $thisUl = element;    
-                        $thisUl.find("li:has(:not(.visible))").hide();
-                        $thisUl.find("li.visible").show().css("border-bottom", "none");
+                        if($thisUl.hasClass("ul-select")) {
+                            $thisUl.find("li:has(:not(.visible))").hide();
+                            $thisUl.find("li.visible").show().css("border-bottom", "none");
+                        }
                     };
                     var sentinel = function() {
                         var $thisUl = element;
@@ -123,15 +123,31 @@
                             }
                         });
                     };
-                    adSelect();
-                    close();
-                    sentinel();
-                    reconnaissance();
+                    if($(window).width() <= edgeWidth) {
+                        if(!$(element).hasClass("ul-select")) {
+                            adSelect();
+                            close();
+                            sentinel();
+                            reconnaissance();
+                        }
+                    } else if($(element).hasClass("ul-select")){
+                        $(element).removeClass("ul-select");
+                        $(element).find("li.visible").remove();
+                        $(element).find("li").each(function(){
+                            $(this).show();
+                        });
+                    }
                 };
                 
-                ulToSelect($("ul#first"));
-                ulToSelect($("ul#second"));
-//                ulToSelect($("ul#third"));
+                $(window).resize(function() {
+                    ulToSelect($("ul#first"), 767);
+                    ulToSelect($("ul#second"), 767);
+//                  ulToSelect($("ul#third"), 767);
+                });
+                
+                ulToSelect($("ul#first"), 767);
+                ulToSelect($("ul#second"), 767);
+//                ulToSelect($("ul#third"), 767);
             });
         </script>
     </body>

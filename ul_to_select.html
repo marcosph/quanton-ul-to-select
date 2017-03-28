@@ -10,7 +10,6 @@
                 margin: 8px auto;
                 padding: 0px;
                 border: 1px solid #ccc;
-                border-radius: 8px;
                 list-style:none;
                 background-image: url("./down-arrow-black.png");
                 background-size: 16px 16px;
@@ -25,6 +24,12 @@
             ul.ul-select li.active a, ul.ul-select li.visible a { 
                 color: #000;
             }
+            ul.ul-select li.hover {
+                background-color: #666;
+            }
+            ul.ul-select li.hover a {
+                color: #fff;
+            }
             ul.ul-select li a {
                 margin-left: 8px;
                 padding-left: 8px;
@@ -36,8 +41,14 @@
             ul.ul-select li:active, ul.ul-select li:hover {
                 background-color: #666;
             }
+            ul.ul-select li:active a, ul.ul-select li:hover a {
+                color: #fff;
+            }
             ul.ul-select li.visible:active, ul.ul-select li.visible:hover {
                 background-color: transparent;
+            }
+            ul.ul-select li.visible:active a, ul.ul-select li.visible:hover a {
+                color: #000;
             }
         </style>
     </head>
@@ -51,6 +62,15 @@
             <li><a href="./ul_to_select.php#second-option1">Option 1</a></li>
             <li class="active"><a href="./ul_to_select.php#second-option2">Option 2</a></li>
             <li><a href="./ul_to_select.php#second-option3">Option 3</a></li>
+            <li><a href="./ul_to_select.php#second-option4">Option 4</a></li>
+            <li><a href="./ul_to_select.php#second-option5">Option 5</a></li>
+            <li><a href="./ul_to_select.php#second-option6">Option 6</a></li>
+            <li><a href="./ul_to_select.php#second-option7">Option 7</a></li>
+            <li><a href="./ul_to_select.php#second-option8">Option 8</a></li>
+            <li><a href="./ul_to_select.php#second-option9">Option 9</a></li>
+            <li><a href="./ul_to_select.php#second-option10">Option 10</a></li>
+            <li><a href="./ul_to_select.php#second-option11">Option 11</a></li>
+            <li><a href="./ul_to_select.php#second-option12">Option 12</a></li>
         </ul>
         <ul id="third">
             <li><a href="./ul_to_select.php#third-option1">Option 1</a></li>
@@ -60,11 +80,13 @@
         <script type="text/javascript">
             $(function(){
                 var ulToSelect = function(element, edgeWidth) {
+                    var closed = false;
                     var adSelect = function() {
                         var $thisUl = element; 
                         $thisUl.addClass("ul-select");
                         var $activeLi = $thisUl.find("li.active");
                         if($activeLi.length > 0) {
+                            $activeLi.addClass("hover");
                             var $li = $(document.createElement('li')).attr({
                                     "class": "visible"
                             }).append($(document.createElement('a')).attr({
@@ -88,10 +110,16 @@
                         }
                     };
                     var close = function() {
+                        closed = true;
                         var $thisUl = element;    
                         if($thisUl.hasClass("ul-select")) {
-                            $thisUl.find("li:has(:not(.visible))").hide();
+                            $thisUl.find("li:not(.visible)").hide();
                             $thisUl.find("li.visible").show().css("border-bottom", "none");
+                            $thisUl.find("li").each(function(){
+                                if($(this).hasClass("active")) {
+                                    $(this).addClass("hover");
+                                }
+                            });
                         }
                     };
                     var sentinel = function() {
@@ -99,8 +127,13 @@
                         $($thisUl).find("li").click(function(event){
                             if($(this).is('li.visible')) {
                                 event.preventDefault();
-                                $thisUl.find("li").show();
-                                $(this).css("border-bottom", "1px solid #ccc");
+                                closed = false;
+                                if(!$thisUl.find("li:nth-child(2)").is(":visible")) {
+                                    $thisUl.find("li").show();
+                                    $(this).css("border-bottom", "1px solid #ccc");
+                                } else {
+                                    close();
+                                }
                             }
                             else {
                                 $thisUl.find("li").each(function(){
@@ -113,6 +146,11 @@
                                     $(this).css("border-bottom", "1px solid #ccc");
                                 });
                                 close();
+                            }
+                        });
+                        $thisUl.find("li:not(.visible)").hover(function(){
+                            if(closed === false) {
+                                $thisUl.find("li").removeClass("hover");
                             }
                         });
                     };

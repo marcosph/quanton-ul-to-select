@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>jQuery Piu/Meno Text</title>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <style>
+            ul.ul-select { 
+                width: auto;
+                margin: 8px auto;
+                padding: 0px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                list-style:none;
+                background-image: url("./down-arrow-black.png");
+                background-size: 16px 16px;
+                background-repeat: no-repeat;
+                background-attachment: scroll;
+                background-position: calc(100% - 8px) 8px;
+                background-color: transparent;
+                cursor: pointer;
+                line-height: 2rem;
+                font-family: sans-serif;
+            }
+            ul.ul-select li.click a, ul.ul-select li.visible a { 
+                color: #000;
+            }
+            ul.ul-select li a {
+                margin-left: 8px;
+                padding-left: 8px;
+                margin-right: 8px;
+                display: block;
+                color: #888;
+                text-decoration:none;
+            }
+            ul.ul-select li:active, ul.ul-select li:hover {
+                background-color: #666;
+            }
+            ul.ul-select li.visible:active, ul.ul-select li.visible:hover {
+                background-color: transparent;
+            }
+        </style>
+    </head>
+    <body>
+        <ul id="first">
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#fist-option1">Option 1</a></li>
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#fist-option2">Option 2</a></li>
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#fist-option3">Option 3</a></li>
+        </ul>
+        <ul id="second">
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#second-option1">Option 1</a></li>
+            <li class="click"><a href="http://localhost/test_php_utf8/ul_to_select.php#second-option2">Option 2</a></li>
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#second-option3">Option 3</a></li>
+        </ul>
+        <ul id="third">
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#third-option1">Option 1</a></li>
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#third-option2">Option 2</a></li>
+            <li><a href="http://localhost/test_php_utf8/ul_to_select.php#third-option3">Option 3</a></li>
+        </ul>
+        <script type="text/javascript">
+            $(function(){
+                var ulToSelect = function(element) {
+                    var adSelect = function() {
+                        var $thisUl = element; 
+                        $thisUl.attr({
+                            "class": "ul-select"
+                        });
+                        var $clickLi = $thisUl.find("li.click");
+                        if($clickLi.length > 0) {
+                            var $li = $(document.createElement('li')).attr({
+                                    "class": "visible"
+                            }).append($(document.createElement('a')).attr({
+                                "href": "#"
+                            }).text($clickLi.find("a").text()));
+                            $thisUl.prepend($li);
+                        }
+                        else {
+                            var $firstLi = $thisUl.find("li:first");
+                            if($firstLi.length > 0) {
+                                $firstLi.attr({
+                                    "class": "click"
+                                });
+                                var $li = $(document.createElement('li')).attr({
+                                    "class": "visible"
+                                }).append($(document.createElement('a')).attr({
+                                    "href": "#"
+                                }).text($firstLi.find("a").text()));
+                                $thisUl.prepend($li);
+                            }
+                        }
+                    };
+                    var close = function() {
+                        var $thisUl = element;    
+                        $thisUl.find("li:has(:not(.visible))").hide();
+                        $thisUl.find("li.visible").show().css("border-bottom", "none");
+                    };
+                    var sentinel = function() {
+                        var $thisUl = element;
+                        $($thisUl).find("li").click(function(event){
+                            if($(this).is('li.visible')) {
+                                event.preventDefault();
+                                $thisUl.find("li").show();
+                                $(this).css("border-bottom", "1px solid #ccc");
+                            }
+                            else {
+                                $thisUl.find("li").each(function(){
+                                    $(this).removeClass("click");
+                                });
+                                $(this).addClass("click");
+                                var $clickText = $(this).find("a").text();
+                                $thisUl.find("li.visible").each(function(){
+                                    $(this).find("a").text($clickText);
+                                    $(this).css("border-bottom", "1px solid #ccc");
+                                });
+                                close();
+                            }
+                        });
+                    };
+                    var reconnaissance = function() {
+                        $(document).click(function(event) {
+                            if(!$(event.target).is('li a')) {
+                                close();
+                            }
+                        });
+                    };
+                    adSelect();
+                    close();
+                    sentinel();
+                    reconnaissance();
+                };
+                
+                ulToSelect($("ul#first"));
+                ulToSelect($("ul#second"));
+            });
+        </script>
+    </body>
+</html>

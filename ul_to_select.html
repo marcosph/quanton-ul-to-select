@@ -22,7 +22,7 @@
                 line-height: 2rem;
                 font-family: sans-serif;
             }
-            ul.ul-select li.click a, ul.ul-select li.visible a { 
+            ul.ul-select li.active a, ul.ul-select li.visible a { 
                 color: #000;
             }
             ul.ul-select li a {
@@ -43,19 +43,19 @@
     </head>
     <body>
         <ul id="first">
-            <li><a href="./ul_to_select.html#fist-option1">Option 1</a></li>
+            <li><a href="./ul_to_select.php#fist-option1">Option 1</a></li>
             <li><a href="./ul_to_select.php#fist-option2">Option 2</a></li>
-            <li><a href="./ul_to_select.html#fist-option3">Option 3</a></li>
+            <li><a href="./ul_to_select.php#fist-option3">Option 3</a></li>
         </ul>
         <ul id="second">
-            <li><a href="./ul_to_select.html#second-option1">Option 1</a></li>
-            <li class="click"><a href="./ul_to_select.html#second-option2">Option 2</a></li>
-            <li><a href="./ul_to_select.html#second-option3">Option 3</a></li>
+            <li><a href="./ul_to_select.php#second-option1">Option 1</a></li>
+            <li class="active"><a href="./ul_to_select.php#second-option2">Option 2</a></li>
+            <li><a href="./ul_to_select.php#second-option3">Option 3</a></li>
         </ul>
         <ul id="third">
-            <li><a href="./ul_to_select.html#third-option1">Option 1</a></li>
-            <li><a href="./ul_to_select.html#third-option2">Option 2</a></li>
-            <li><a href="./ul_to_select.html#third-option3">Option 3</a></li>
+            <li><a href="./ul_to_select.php#third-option1">Option 1</a></li>
+            <li><a href="./ul_to_select.php#third-option2">Option 2</a></li>
+            <li class="active"><a href="./ul_to_select.php#third-option3">Option 3</a></li>
         </ul>
         <script type="text/javascript">
             $(function(){
@@ -65,20 +65,20 @@
                         $thisUl.attr({
                             "class": "ul-select"
                         });
-                        var $clickLi = $thisUl.find("li.click");
-                        if($clickLi.length > 0) {
+                        var $activeLi = $thisUl.find("li.active");
+                        if($activeLi.length > 0) {
                             var $li = $(document.createElement('li')).attr({
                                     "class": "visible"
                             }).append($(document.createElement('a')).attr({
                                 "href": "#"
-                            }).text($clickLi.find("a").text()));
+                            }).text($activeLi.find("a").text()));
                             $thisUl.prepend($li);
                         }
                         else {
                             var $firstLi = $thisUl.find("li:first");
                             if($firstLi.length > 0) {
                                 $firstLi.attr({
-                                    "class": "click"
+                                    "class": "active"
                                 });
                                 var $li = $(document.createElement('li')).attr({
                                     "class": "visible"
@@ -104,12 +104,12 @@
                             }
                             else {
                                 $thisUl.find("li").each(function(){
-                                    $(this).removeClass("click");
+                                    $(this).removeClass("active");
                                 });
-                                $(this).addClass("click");
-                                var $clickText = $(this).find("a").text();
+                                $(this).addClass("active");
+                                var $activeText = $(this).find("a").text();
                                 $thisUl.find("li.visible").each(function(){
-                                    $(this).find("a").text($clickText);
+                                    $(this).find("a").text($activeText);
                                     $(this).css("border-bottom", "1px solid #ccc");
                                 });
                                 close();
@@ -131,6 +131,7 @@
                 
                 ulToSelect($("ul#first"));
                 ulToSelect($("ul#second"));
+//                ulToSelect($("ul#third"));
             });
         </script>
     </body>

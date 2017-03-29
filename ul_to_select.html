@@ -5,12 +5,11 @@
         <title>jQuery Piu/Meno Text</title>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <style>
-            ul.ul-select { 
+            div.ul-selector {
                 width: auto;
-                margin: 8px auto;
-                padding: 0px;
+                margin-top: 2rem;
+                line-height: 2rem;
                 border: 1px solid #ccc;
-                list-style:none;
                 background-image: url("./down-arrow-black.png");
                 background-size: 16px 16px;
                 background-repeat: no-repeat;
@@ -21,8 +20,26 @@
                 line-height: 2rem;
                 font-family: sans-serif;
             }
-            ul.ul-select li.active a, ul.ul-select li.visible a { 
+            div.ul-selector a {
+                margin-left: 8px;
+                padding-left: 8px;
+                margin-right: 8px;
+                display: block;
                 color: #000;
+                text-decoration:none;
+            }
+            ul.ul-select { 
+                width: auto;
+                margin: 0 auto auto auto;
+                padding: 0px;
+                border-top: none;
+                list-style:none;
+                cursor: pointer;
+                line-height: 2rem;
+                font-family: sans-serif;
+                max-height: 300px;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
             ul.ul-select li.hover {
                 background-color: #666;
@@ -44,12 +61,6 @@
             ul.ul-select li:active a, ul.ul-select li:hover a {
                 color: #fff;
             }
-            ul.ul-select li.visible:active, ul.ul-select li.visible:hover {
-                background-color: transparent;
-            }
-            ul.ul-select li.visible:active a, ul.ul-select li.visible:hover a {
-                color: #000;
-            }
         </style>
     </head>
     <body>
@@ -60,7 +71,7 @@
         </ul>
         <ul id="second">
             <li><a href="./ul_to_select.php#second-option1">Option 1</a></li>
-            <li class="active"><a href="./ul_to_select.php#second-option2">Option 2</a></li>
+            <li><a href="./ul_to_select.php#second-option2">Option 2</a></li>
             <li><a href="./ul_to_select.php#second-option3">Option 3</a></li>
             <li><a href="./ul_to_select.php#second-option4">Option 4</a></li>
             <li><a href="./ul_to_select.php#second-option5">Option 5</a></li>
@@ -68,7 +79,7 @@
             <li><a href="./ul_to_select.php#second-option7">Option 7</a></li>
             <li><a href="./ul_to_select.php#second-option8">Option 8</a></li>
             <li><a href="./ul_to_select.php#second-option9">Option 9</a></li>
-            <li><a href="./ul_to_select.php#second-option10">Option 10</a></li>
+            <li class="active"><a href="./ul_to_select.php#second-option10">Option 10</a></li>
             <li><a href="./ul_to_select.php#second-option11">Option 11</a></li>
             <li><a href="./ul_to_select.php#second-option12">Option 12</a></li>
         </ul>
@@ -80,19 +91,22 @@
         <script type="text/javascript">
             $(function(){
                 var ulToSelect = function(element, edgeWidth) {
+                    var $currentId = undefined;
                     var closed = false;
                     var adSelect = function() {
                         var $thisUl = element; 
                         $thisUl.addClass("ul-select");
+                        $thisUl.hide();
                         var $activeLi = $thisUl.find("li.active");
                         if($activeLi.length > 0) {
                             $activeLi.addClass("hover");
-                            var $li = $(document.createElement('li')).attr({
-                                    "class": "visible"
+                            var $div = $(document.createElement('div')).attr({
+                                "class": "ul-selector",
+                                "id": $thisUl.attr("id")
                             }).append($(document.createElement('a')).attr({
                                 "href": "#"
                             }).text($activeLi.find("a").text()));
-                            $thisUl.prepend($li);
+                            $thisUl.before($div);
                         }
                         else {
                             var $firstLi = $thisUl.find("li:first");
@@ -100,22 +114,21 @@
                                 $firstLi.attr({
                                     "class": "active"
                                 });
-                                var $li = $(document.createElement('li')).attr({
-                                    "class": "visible"
+                                var $div = $(document.createElement('div')).attr({
+                                    "class": "ul-selector",
+                                    "id": $thisUl.attr("id")
                                 }).append($(document.createElement('a')).attr({
                                     "href": "#"
                                 }).text($firstLi.find("a").text()));
-                                $thisUl.prepend($li);
+                                $thisUl.before($div);
                             }
                         }
                     };
                     var close = function() {
                         closed = true;
-                        var $thisUl = element;    
-                        if($thisUl.hasClass("ul-select")) {
-                            $thisUl.find("li:not(.visible)").hide();
-                            $thisUl.find("li.visible").show().css("border-bottom", "none");
-                            $thisUl.find("li").each(function(){
+                        if($("ul#" + $currentId).hasClass("ul-select")) {
+                            $("ul#" + $currentId).hide();
+                            $("ul#" + $currentId).find("li").each(function(){
                                 if($(this).hasClass("active")) {
                                     $(this).addClass("hover");
                                 }
@@ -124,31 +137,29 @@
                     };
                     var sentinel = function() {
                         var $thisUl = element;
-                        $($thisUl).find("li").click(function(event){
-                            if($(this).is('li.visible')) {
-                                event.preventDefault();
-                                closed = false;
-                                if(!$thisUl.find("li:nth-child(2)").is(":visible")) {
-                                    $thisUl.find("li").show();
-                                    $(this).css("border-bottom", "1px solid #ccc");
-                                } else {
-                                    close();
-                                }
-                            }
-                            else {
-                                $thisUl.find("li").each(function(){
-                                    $(this).removeClass("active");
-                                });
-                                $(this).addClass("active");
-                                var $activeText = $(this).find("a").text();
-                                $thisUl.find("li.visible").each(function(){
-                                    $(this).find("a").text($activeText);
-                                    $(this).css("border-bottom", "1px solid #ccc");
-                                });
+                        $("div.ul-selector#" + $currentId).click(function(event){
+                            event.preventDefault();
+                            closed = false;
+                            if(!($("ul#" + $currentId).is(":visible"))) {
+                                $("ul#" + $currentId).show();
+                                $("ul#" + $currentId).css({
+                                    "border-bottom": "1px solid #ccc", 
+                                    "border-right": "1px solid #ccc",
+                                    "border-left": "1px solid #ccc"});
+                            } else {
                                 close();
                             }
                         });
-                        $thisUl.find("li:not(.visible)").hover(function(){
+                        $($thisUl).find("li").click(function(event){
+                            $thisUl.find("li").each(function(){
+                                $(this).removeClass("active");
+                            });
+                            $(this).addClass("active");
+                            var $activeText = $(this).find("a").text();
+                            $("div.ul-selector#" + $currentId + "> a").text($activeText);
+                            close();
+                        });
+                        $thisUl.find("li").hover(function(){
                             if(closed === false) {
                                 $thisUl.find("li").removeClass("hover");
                             }
@@ -156,24 +167,24 @@
                     };
                     var reconnaissance = function() {
                         $(document).click(function(event) {
-                            if(!$(event.target).is('li a')) {
+                            if(!$(event.target).is("div.ul-selector#" + $currentId + "> a")) {
                                 close();
                             }
                         });
                     };
                     if($(window).width() <= edgeWidth) {
                         if(!$(element).hasClass("ul-select")) {
+                            $currentId = $(element).attr("id");
                             adSelect();
                             close();
                             sentinel();
                             reconnaissance();
                         }
                     } else if($(element).hasClass("ul-select")){
+                        $(element).css("border", "none");
                         $(element).removeClass("ul-select");
-                        $(element).find("li.visible").remove();
-                        $(element).find("li").each(function(){
-                            $(this).show();
-                        });
+                        $("div.ul-selector").remove();
+                        $(element).show();
                     }
                 };
                 

@@ -338,7 +338,7 @@
                         reconnaissance();
                         search();
                     }
-                } else if($(element).hasClass("ul-select")){
+                } else if($(element).hasClass("ul-select")) {
                     $(element).css("border", "none");
                     $(element).removeClass("ul-select");
                     $("div.ul-selector").remove();
@@ -347,10 +347,7 @@
                 }
             };
             
-            $(window).load(function() {
-                ulToSelect($("ul#usa"), 767);
-                ulToSelect($("ul#eu"), 767);
-            }).resize(function() {
+            $(window).on("load resize", function() {
                 ulToSelect($("ul#usa"), 767);
                 ulToSelect($("ul#eu"), 767);
             });

@@ -193,7 +193,7 @@
                         $(element).show();
                     });
                     element.find("li").each(function(index, element) {
-                        if(!($(element).data("text").toLowerCase()).includes(text.toLowerCase())) {
+                        if(!($(element).data("text").toLowerCase()).startsWith(text.toLowerCase())) {
                             $(element).hide();
                         }
                     });

@@ -301,34 +301,69 @@
                     });
                 };
                 var search = function () {
-                    // in fase di ricerca nascondi li che non fanno match
-                    $("div.ul-selector-search#" + element.attr("id") + " input").keyup(function(event) {
-                        if(!(event.which === 40 || event.which === 38)) {
+                    // on search hide lis that doesn't match
+                    var $scrollGap = 0;
+                    var $visibleLiGap = 0;
+                    $("div.ul-selector-search#" + element.attr("id") + " input").one("click", function () {
+                        // calculate scroll gap only once on input click
+                        var $firstVisibleLi = element.find("li:visible:eq(0)");
+                        var $secondVisibleLi = element.find("li:visible:eq(1)");
+                        if($secondVisibleLi.length > 0 && $firstVisibleLi.length > 0) {
+                            $scrollGap = $secondVisibleLi.position().top - $firstVisibleLi.position().top;
+                        }
+                    }).focus(function() {
+                        // on input focus scroll to active li
+                        var $scrollValue = 0;
+                        var $activeLi = element.find("li.active");
+                        var $firstLi = element.find("li:visible:eq(0)");
+                        if($activeLi.length > 0) {
+                            $currentLi = $activeLi.index();
+                        } else {
                             $currentLi = 0;
+                        }
+                        // calculate the gap between the first and visible li so to calculate how to scroll on down up click
+                        if($activeLi.length > 0 && $firstLi.length > 0) {
+                            $scrollValue = ($activeLi.position().top - $firstLi.position().top);
+                            $visibleLiGap = $scrollValue;
+                        }
+                        $("ul.ul-select").scrollTop($scrollValue);
+                    }).keyup(function(event) {
+                        if(!(event.which === 40 || event.which === 38)) {
+                            // show hide lis that makes match and move hover on current first element of these that make match
                             showHideLis(this.value);
+                            // set current li to first visible li
+                            $currentLi = 0;
                             var $visibleLi = element.find("li:visible:eq("+$currentLi+")");
                             if($visibleLi.length > 0) {
                                 replaceHover($visibleLi);
                             }
+                            $visibleLiGap = 0;
+                            $("ul.ul-select").scrollTop(0);
                         }
                     }).keydown(function(event) {
                         if(event.which === 40 && $currentLi < (element.find("li:visible").length - 1)) {
+                            // on key press down set hover to selected element and scroll on hovered element
                             ++$currentLi;
                             var $visibleLi = element.find("li:visible:eq("+$currentLi+")");
                             if($visibleLi.length > 0) {
                                 replaceHover($visibleLi);
+                                $visibleLiGap = $visibleLiGap + $scrollGap;
+                                $("ul.ul-select").scrollTop($visibleLiGap);
                             }
                         }
                         if(event.which === 38 && $currentLi > 0) {
+                            // on key press up set hover to selected element and scroll on hovered element
                             --$currentLi;
                             var $visibleLi = element.find("li:visible:eq("+$currentLi+")");
                             if($visibleLi.length > 0) {
                                 replaceHover($visibleLi);
+                                $visibleLiGap = $visibleLiGap - $scrollGap;
+                                $("ul.ul-select").scrollTop($visibleLiGap);
                             }
                         }
                         if(event.which === 13) {
                             event.preventDefault();
-                            // on enter event go to the href of first visible li
+                            // on enter event go to the href of hovered element
                             var $hoveredLi = element.find("li.hover");
                             if($hoveredLi.length > 0) {
                                 window.location.href = $hoveredLi.find("a").attr('href');
